@@ -2,7 +2,12 @@ import json
 import random
 import os
 from pynput import keyboard
+from dotenv import load_dotenv
 import threading
+
+load_dotenv()
+
+directory_path = os.getenv("DIRECTORY_PATH")
 
 class MinecraftControlChanger:
     def __init__(self):
@@ -59,7 +64,7 @@ class MinecraftControlChanger:
             "key.mouse.middle", "key.mouse.4", "key.mouse.5"
         ]
         
-        self.config_path = r"[PASTE YOUR 'standardsettings.json' FILE PATH HERE]"
+        self.config_path = rf"{directory_path}"
         self.is_changing = False
     
     def get_random_key_mapping(self):
@@ -101,6 +106,12 @@ class MinecraftControlChanger:
             # get new random mappings
             new_mapping = self.get_random_key_mapping()
             
+            with open("controls.txt", "w") as txt:
+                txt.write("="*50)
+                txt.write("\nMINECRAFT CONTROLS\n")
+                txt.write("="*50)
+                txt.write("\n\n")
+            
             # change controls
             success_count = 0
             for i, current_key in enumerate(self.keys_to_change):
@@ -109,6 +120,9 @@ class MinecraftControlChanger:
                     standard_settings[current_key] = new_key
                     print(f"Changing {current_key} to {new_key}")
                     success_count += 1
+                    
+                    with open("controls.txt", "a") as txt:
+                        txt.write(f"{current_key[8:]}: {new_key[4:]}\n")
                     
             # write ALL settings back to file
             with open(self.config_path, "w", encoding='utf-8') as file:
@@ -166,6 +180,7 @@ if __name__ == "__main__":
     # check if required packages are installed
     try:
         import pynput
+        import dotenv
     except ImportError:
         print("Error: Required packages not installed.")
         print("Please install them with: pip install -r requirements.txt")
