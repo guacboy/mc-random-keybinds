@@ -7,8 +7,6 @@ import threading
 
 load_dotenv()
 
-directory_path = os.getenv("DIRECTORY_PATH")
-
 class MinecraftControlChanger:
     def __init__(self):
         self.keys_to_change = [
@@ -64,7 +62,7 @@ class MinecraftControlChanger:
             "key.mouse.middle", "key.mouse.4", "key.mouse.5"
         ]
         
-        self.config_path = rf"{directory_path}"
+        self.config_path = os.getenv("DIRECTORY_PATH")
         self.is_changing = False
     
     def get_random_key_mapping(self):
@@ -145,7 +143,7 @@ def main():
     print("INSTRUCTIONS:")
     print("1. Locate your 'standardsettings.json' file (can be somewhere in ../.minecraft/config/)")
     print("2. Copy the file path to 'standardsettings.json' (e.g., ../.minecraft/.config/standardsettings.json)")
-    print("3. Paste the file path to the 'self.config_path' variable")
+    print("3. Paste the file path to the 'DIRECTORY_PATH' variable in .env")
     print("4. Make sure your Minecraft is CLOSED before running the script")
     print("="*60)
     
