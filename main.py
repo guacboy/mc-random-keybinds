@@ -49,7 +49,7 @@ class MinecraftControlChanger:
             "key.keyboard.left.shift", "key.keyboard.right.shift", 
             "key.keyboard.left.control", "key.keyboard.right.control", 
             "key.keyboard.left.alt", "key.keyboard.right.alt", 
-            "key.keyboard.tab", "key.keyboard.capslock", "key.keyboard.f1", 
+            "key.keyboard.tab", "key.keyboard.f1", 
             "key.keyboard.f2", "key.keyboard.f3", "key.keyboard.f4", 
             "key.keyboard.f5", "key.keyboard.f6", "key.keyboard.f7", 
             "key.keyboard.f8", "key.keyboard.f9", "key.keyboard.f10", 
@@ -57,8 +57,7 @@ class MinecraftControlChanger:
             "key.keyboard.3", "key.keyboard.4", "key.keyboard.5", 
             "key.keyboard.6", "key.keyboard.7", "key.keyboard.8", 
             "key.keyboard.9", "key.keyboard.0", "key.keyboard.insert", 
-            "key.keyboard.home", "key.keyboard.pageup", 
-            "key.keyboard.pagedown", "key.mouse.left", "key.mouse.right", 
+            "key.keyboard.home", "key.mouse.left", "key.mouse.right", 
             "key.mouse.middle", "key.mouse.4", "key.mouse.5"
         ]
         
@@ -100,7 +99,10 @@ class MinecraftControlChanger:
             
             # load ALL current settings
             standard_settings = self.load_current_settings()
-            
+            if standard_settings is None:
+                print("Aborting: could not load settings. Check DIRECTORY_PATH in .env.")
+                return
+
             # get new random mappings
             new_mapping = self.get_random_key_mapping()
             
