@@ -1,9 +1,18 @@
 # mc-random-keybinds
 
-Randomizes your Minecraft 1.16.1 keybinds with a single hotkey. The script edits the `standardsettings.json` file used by the StandardSettings mod, so the new controls apply the next time the game loads them.
+Scrambles your Minecraft 1.16.1 controls every 60 seconds while you play. The script sits between your keyboard/mouse and the game: when you press a physical key, it blocks that key and sends the game whichever key is bound to the action currently assigned to it. Your actual game binds and settings files are never modified.
+
+## How it works
+
+- Every 60 seconds, each action (jump, sneak, sprint, movement, attack, use, hotbar slots, inventory and so on) gets a random physical input from the list of available keys, which includes mouse buttons.
+- Available keys that are not assigned to any action are blocked, so your normal binds stop working while scrambled.
+- Keys outside the available list (Esc, Enter, slash and others) always work normally.
+- Scrambling only applies while the Minecraft window is focused and you are in a world with no menu open. Menus, chat, the pause screen and other windows use your normal controls. Game state is read from the State Output mod's `wpstateout.txt` (included in MCSR packs). Without that mod, scrambling applies whenever Minecraft is focused.
+- The current mapping is printed in the terminal and saved to `controls.txt` after each shuffle.
 
 ## Requirements
 
+- Windows (the remapper uses Win32 input hooks)
 - Python 3
 - Minecraft 1.16.1 with the StandardSettings mod (for example, an MCSR instance in MultiMC)
 
@@ -12,14 +21,13 @@ Randomizes your Minecraft 1.16.1 keybinds with a single hotkey. The script edits
 1. Create and activate a virtual environment:
    ```bash
    python -m venv .venv
-   source .venv/Scripts/activate   # Windows (Git Bash)
-   source .venv/bin/activate       # macOS/Linux
+   source .venv/Scripts/activate
    ```
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Find your `standardsettings.json` file. It is usually at `.minecraft/config/mcsr/standardsettings.json` inside your instance folder.
+3. Find your `standardsettings.json` file. It is usually at `.minecraft/config/mcsr/standardsettings.json` inside your instance folder. The script reads your binds from it and expects this folder layout to locate `wpstateout.txt`.
 4. Create a `.env` file in the project root with the full path to that file:
    ```
    DIRECTORY_PATH='C:\Users\you\Desktop\MultiMC\instances\1.16.1\.minecraft\config\mcsr\standardsettings.json'
@@ -28,20 +36,20 @@ Randomizes your Minecraft 1.16.1 keybinds with a single hotkey. The script edits
 
 ## Usage
 
-1. **Close Minecraft completely.** StandardSettings reads `standardsettings.json` only when the game starts, so changes made while the game is open are ignored.
-2. Run the script:
-   ```bash
-   python main.py
-   ```
-3. Press F2 to randomize.
-4. Launch Minecraft and create or reset a world. StandardSettings applies the new binds when the world loads.
+Start the script (Minecraft can be open or closed):
 
-| Key | Action |
-| --- | ------ |
-| F2  | Randomize controls |
-| F3  | Exit the program |
+```bash
+python main.py
+```
 
-The hotkeys are global, so they work even when the terminal is not focused. Each randomization writes the new bindings to `standardsettings.json` and saves a readable list of them to `controls.txt` in the project folder.
+Then play. Controls reshuffle every 60 seconds.
+
+| Key       | Action |
+| --------- | ------ |
+| Page Up   | Reshuffle now |
+| Page Down | Exit the program |
+
+To change the interval, edit `SHUFFLE_INTERVAL_SECONDS` in `main.py`. To change which actions or physical keys are used, edit `ACTIONS` or `AVAILABLE_KEYS`.
 
 ## Development
 
@@ -60,6 +68,7 @@ python -m pytest
 
 ## Troubleshooting
 
-- **Controls did not change in game**: make sure Minecraft was closed when you pressed F2, then launch it and create or reset a world.
-- **"Config file not found"** or **"Aborting: could not load settings"**: check that `DIRECTORY_PATH` in `.env` points to an existing file and is quoted as described above.
-- **"Config file is not valid JSON"**: the settings file is corrupted. Restore it from a backup or let the mod regenerate it.
+- **"Settings file not found"**: check that `DIRECTORY_PATH` in `.env` points to an existing file and is quoted as described above.
+- **"Not scrambling: ..."**: those actions are unbound (`key.keyboard.unknown`) or use a key the script does not recognize. Bind them in game to include them.
+- **Controls never scramble**: the script checks that the focused window title starts with "Minecraft". Make sure the game window is focused and you are in a world with no menu open.
+- **A key feels stuck after exiting**: press and release it once. The script releases held keys on exit, but closing the terminal window directly skips that step.
