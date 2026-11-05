@@ -1,0 +1,13 @@
+#!/bin/sh
+# Runs the test suite before every push. Push is blocked if any test fails.
+if [ -x .venv/Scripts/python ]; then
+  PY=.venv/Scripts/python
+elif [ -x .venv/bin/python ]; then
+  PY=.venv/bin/python
+else
+  echo "pre-push: .venv not found, create it and install requirements-dev.txt" >&2
+  exit 1
+fi
+
+echo "pre-push: running pytest..."
+"$PY" -m pytest -q || { echo "pre-push: tests failed, push aborted" >&2; exit 1; }
